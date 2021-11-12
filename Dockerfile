@@ -6,5 +6,3 @@ RUN pip3 install backtrader
 RUN pip3 install backtrader[plotting] --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install torch --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install torchvision --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple
-
-COPY src /home/workspace/
