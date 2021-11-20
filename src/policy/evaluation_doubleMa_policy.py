@@ -4,12 +4,14 @@ import akshare as ak
 import backtrader as bt 
 import matplotlib as plt
 import pandas as pd 
+import my_plot_interface as myplt
 
 # plt.rcParams["font.sans-serif"] = ["SimHei"]
 #  plt.rcParams["axes.unicode_minus"] = False
 print(ak.__version__)
 class EvaluationDoubleMA_Strategy(bt.Strategy):
-    params = (("maperiod", 14), ('printlog', False),)    
+    params = (("maperiod", 12), ('printlog', False),)
+    frozen_trade = False    
     value_buffer = 0;
     def __init__(self):
         self.data_close= self.datas[0].close
@@ -17,29 +19,34 @@ class EvaluationDoubleMA_Strategy(bt.Strategy):
         self.buy_price = None
         self.buy_comm = None
         self.value_buffer = self.broker.get_value()
-        self.sma_fast = bt.ind.SimpleMovingAverage(self.datas[0],period = self.params.maperiod)
-        self.sma_slow = bt.ind.SimpleMovingAverage(self.datas[0],period = 12*self.params.maperiod)
-
+        self.sma_fast = bt.ind.SimpleMovingAverage(self.datas[0],period = 5)
+        self.sma_slow = bt.ind.SimpleMovingAverage(self.datas[0],period = 20)
+        self.crossover = bt.ind.CrossOver(self.sma_fast,self.sma_slow)
+    
     def next(self):
         portfolio_value = self.broker.get_value()
+        if self.crossover > 0:
+            self.frozen_trade = False
         if(portfolio_value/self.value_buffer < 0.9):
             self.order = self.order_target_percent(target = 0)
             self.log("止损")
             self.value_buffer = portfolio_value
+            self.frozen_trade = True
             return
         if(portfolio_value/self.value_buffer > 1.3):
             self.order = self.order_target_percent(target = 0)
             self.log("止盈")
             self.value_buffer = portfolio_value
+            self.frozen_trade = True
             return
-        stock_value = self.broker.get_value([self.data])
+        stock_value = self.broker.get_value([self.datas[0]])
         stock_precentage = stock_value/portfolio_value
         self.log("total Value, %.2f , stock value, %.2f stock precentage, %.3f" % (portfolio_value,stock_value,stock_precentage))
         target_precent = stock_precentage
-        if(self.sma_fast[0] > self.sma_slow[0] and stock_precentage < 1):
+        if(self.sma_fast[0] > self.sma_slow[0] and stock_precentage < 1 and self.frozen_trade == False):
                 self.log("buy create, %.2f"%self.data_close[0])
                 target_precent = 1 if 0.1 + stock_precentage >=1 else 0.1 + stock_precentage 
-        elif (self.sma_fast[0] <= self.sma_slow[0] and stock_precentage > 0):
+        elif (self.sma_fast[0] < self.sma_slow[0] and stock_precentage > 0 and self.frozen_trade == False):
                 self.log("sell create, %2f" % self.data_close[0])
                 target_precent = 0 if  stock_precentage - 0.2 <= 0 else stock_precentage - 0.2 
         else:
@@ -86,8 +93,8 @@ class EvaluationDoubleMA_Strategy(bt.Strategy):
 
 
 def main(code = "600070", start_cash = 1e5,stake = 100, commission_fee = 0.001):
-    cerebro = bt.Cerebro() 
-    cerebro.optstrategy(EvaluationDoubleMA_Strategy, maperiod=range(10, 20))
+    cerebro = bt.Cerebro(stdstats = False) 
+    cerebro.optstrategy(EvaluationDoubleMA_Strategy)
     stock_hfq_df = ak.stock_zh_a_hist(symbol=code,adjust="hfq",start_date='20000101', end_date='20210617').iloc[:,:6]
     stock_hfq_df.columns = [
         'date',
@@ -98,16 +105,21 @@ def main(code = "600070", start_cash = 1e5,stake = 100, commission_fee = 0.001):
         'volume',
     ]
     stock_hfq_df.index = pd.to_datetime(stock_hfq_df['date'])
-    start_date = datetime(2010, 1, 2)
+    start_date = datetime(2019, 1, 2)
     end_date = datetime(2020, 1, 3)
     data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date) 
     cerebro.adddata(data)
     cerebro.broker.setcash(start_cash)
     cerebro.broker.setcommission(commission= commission_fee)
+    cerebro.addobserver(myplt.my_buysell)
+    cerebro.addobserver(bt.observers.Trades)
+    cerebro.addobserver(bt.observers.TimeReturn)
+    # cerebro.addobserver(bt.observers.DrawDown)
+    # cerebro.addobserver(bt.observers.TimeReturn)
     # cerebro.addsizer(bt.sizers.FixedSize,stake = stake)
     print("期初总资金: %.2f" % cerebro.broker.getvalue())
-    cerebro.run(maxcpus=1)  # 用单核 CPU 做优化
+    cerebro.run(maxcpus=1,optreturn = False)  # 用单核 CPU 做优化
     print("期末总资金: %.2f" % cerebro.broker.getvalue())
-
+    cerebro.plot()
 if __name__ == '__main__':
     main()
