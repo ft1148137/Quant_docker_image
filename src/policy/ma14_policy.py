@@ -1,13 +1,7 @@
-from datetime import datetime
-
-import akshare as ak
-import backtrader as bt 
-import matplotlib as plt
-import pandas as pd 
+import backtrader as bt  
 
 # plt.rcParams["font.sans-serif"] = ["SimHei"]
 #  plt.rcParams["axes.unicode_minus"] = False
-print(ak.__version__)
 class MA14_Strategy(bt.Strategy):
     params = (("maperiod", 14), ('printlog', False),)    
 
@@ -67,31 +61,3 @@ class MA14_Strategy(bt.Strategy):
 
     def stop(self):
         self.log("(MA均线： %2d日) 期末总资金 %.2f" % (self.params.maperiod, self.broker.getvalue()), do_print=True)
-
-
-def main(code = "600070", start_cash = 1e5,stake = 100, commission_fee = 0.001):
-    cerebro = bt.Cerebro() 
-    cerebro.optstrategy(MA14_Strategy, maperiod=range(10, 20))
-    stock_hfq_df = ak.stock_zh_a_hist(symbol=code,adjust="hfq",start_date='20000101', end_date='20210617').iloc[:,:6]
-    stock_hfq_df.columns = [
-        'date',
-        'open',
-        'close',
-        'high',
-        'low',
-        'volume',
-    ]
-    stock_hfq_df.index = pd.to_datetime(stock_hfq_df['date'])
-    start_date = datetime(2000, 1, 2)
-    end_date = datetime(2021, 6, 16)
-    data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date) 
-    cerebro.adddata(data)
-    cerebro.broker.setcash(start_cash)
-    cerebro.broker.setcommission(commission= commission_fee)
-    cerebro.addsizer(bt.sizers.FixedSize,stake = stake)
-    print("期初总资金: %.2f" % cerebro.broker.getvalue())
-    cerebro.run(maxcpus=1)  # 用单核 CPU 做优化
-    print("期末总资金: %.2f" % cerebro.broker.getvalue())
-
-if __name__ == '__main__':
-    main()
