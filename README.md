@@ -1,4 +1,4 @@
-# Quant_docker_image
+# Quant with docker image
 
 create a docker image for Quant
 
