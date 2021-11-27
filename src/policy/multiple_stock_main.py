@@ -27,15 +27,15 @@ def get_data(code_list,data_start,data_end):
         'pe',
         ]
         data_return.index = pd.to_datetime(data_return['date'])
-        print(data_return)
-    return 
+    return data_return
 
 def main(code = "000300", start_cash = 1e5,stake = 100, commission_fee = 0.001):
     cerebro = bt.Cerebro(stdstats = False) 
     cerebro.optstrategy(EvaluationDoubleMA_Strategy)
     hs300_stock = ak.index_stock_cons(index = "000300").iloc[:,0].tolist()
-    # stock_hfq_df = ak.stock_zh_a_hist(symbol=code,adjust="hfq",start_date='20200101', end_date='20210101').iloc[:,:6]
-    get_data(hs300_stock,'20201102','20201201')
+    stock_pool = get_data(hs300_stock,'20201102','20201201')
+    
+
 # stock_hfq_df.columns = [
     #     'date',
     #     'open',
