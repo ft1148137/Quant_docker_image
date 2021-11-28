@@ -4,7 +4,7 @@ class ChinaStockCommission(bt.CommInfoBase):
     params = (
         ('stamp_duty', 0.001),  
         ('commission', 0.0005),
-        ('transfer_fee', 0.0006)
+        ('transfer_fee', 0.0006),
         ('stocklike', True),
         ('commtype', bt.CommInfoBase.COMM_PERC),
     )
