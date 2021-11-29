@@ -2,5 +2,5 @@ import backtrader as bt
 
 class my_PandasData(bt.feeds.PandasData):
     lines = ('pe','pb','roe',)
-    params = (('pe',-1),('pb',-1),('roe',-1),) 
+    params = (('pe',6),('pb',7),('roe',8),) 
 

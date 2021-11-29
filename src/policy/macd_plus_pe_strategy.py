@@ -9,7 +9,7 @@ class MadcPlusROEStrategy(bt.Strategy):
         self.macd={d:bt.ind.MACDHisto(d, period_me1=self.params.ma_fast, period_me2 = self.params.ma_slow)
         for d in self.stocks}
         self.add_timer(
-            When = bt.Timer.SESSION_START,
+            when = bt.Timer.SESSION_START,
             monthdays=self.params.rebal_monthday,
             monthcarry=True,
         )
