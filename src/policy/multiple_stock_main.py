@@ -70,23 +70,27 @@ def grep_data_online(code_list,data_start,data_end):
     # return data_return
 def read_local_data(path):
     data_return = []
+    name_return = []
     datafilelist = glob.glob(os.path.join(path, '*'))
     for stock_name in datafilelist:
         df = pd.read_csv(stock_name)
         data_return.append(df)
-    return data_return
+        name_return.append(stock_name[13:])
+    return data_return, name_return
 
 
-def main(code = "000300", start_cash = 1e5,stake = 100, commission_fee = 0.001):
+def main(start_cash = 1e5):
     cerebro = bt.Cerebro(stdstats = False) 
-    cerebro.optstrategy(MadcPlusROEStrategy)
-    hs300_stock = ak.index_stock_cons(index = "000300").iloc[:,0].tolist()
-    # stock_pool = get_data(hs300_stock,'20200103','20201201')
-    stock_pool = read_local_data("./hs300_data")
-    st_date = datetime(2020,1,10)
-    ed_date = datetime(2020,11,30)
+    # cerebro.addobserver(bt.observers.Broker)
+    # cerebro.addobserver(bt.observers.Trades)
+    cerebro.addstrategy(MadcPlusROEStrategy)
+    stock_pool,name_pool = read_local_data("./hs300_data")
+    st_date = datetime(2020,1,19)
+    ed_date = datetime(2020,11,20)
     for i in range(len(stock_pool)):
         stock_ = stock_pool[i].iloc[:,1:]
+        if(len(stock_) < 219):
+            continue
         stock_.columns = [
         'date',
         'open',
@@ -101,36 +105,15 @@ def main(code = "000300", start_cash = 1e5,stake = 100, commission_fee = 0.001):
         stock_.index = pd.to_datetime(stock_['date'])
         test = pd.to_datetime(stock_['date'])
         data = my_PandasData(dataname=stock_, fromdate=st_date, todate=ed_date) 
-        cerebro.adddata(data,name = hs300_stock[i])
+        cerebro.adddata(data,name = name_pool[i])
+        
     cerebro.broker.setcash(start_cash)
-    cerebro.broker.setcommission(commission = ChinaStockCommission)
+    comminfo = ChinaStockCommission(stamp_duty=0.001, commission=0.0005, transfer_fee = 0.0006)
+    cerebro.broker.addcommissioninfo(comminfo)
     print("期初总资金: %.2f" % cerebro.broker.getvalue())
-    cerebro.run(maxcpus=1,optreturn = False)  # 用单核 CPU 做优化
+    result = cerebro.run(maxcpus=4,optreturn = False)  
     print("期末总资金: %.2f" % cerebro.broker.getvalue())
-# stock_hfq_df.columns = [
-    #     'date',
-    #     'open',
-    #     'close',
-    #     'high',
-    #     'low',
-    #     'volume',
-    # ]
-    # stock_hfq_df.index = pd.to_datetime(stock_hfq_df['date'])
-    # start_date = datetime(2019, 1, 2)
-    # end_date = datetime(2020, 1, 3)
-    # data = bt.feeds.PandasData(dataname=stock_hfq_df, fromdate=start_date, todate=end_date) 
-    # cerebro.adddata(data)
-    # cerebro.broker.setcash(start_cash)
-    # cerebro.broker.setcommission(commission= commission_fee)
-    # cerebro.addobserver(myplt.my_buysell)
-    # cerebro.addobserver(bt.observers.Trades)
-    # cerebro.addobserver(bt.observers.TimeReturn)
-    # # cerebro.addobserver(bt.observers.DrawDown)
-    # # cerebro.addobserver(bt.observers.TimeReturn)
-    # # cerebro.addsizer(bt.sizers.FixedSize,stake = stake)
-    # print("期初总资金: %.2f" % cerebro.broker.getvalue())
-    # cerebro.run(maxcpus=1,optreturn = False)  # 用单核 CPU 做优化
-    # print("期末总资金: %.2f" % cerebro.broker.getvalue())
-    # cerebro.plot()
+    # cerebro.plot();
+
 if __name__ == '__main__':
     main()

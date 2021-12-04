@@ -9,10 +9,10 @@ class ChinaStockCommission(bt.CommInfoBase):
         ('commtype', bt.CommInfoBase.COMM_PERC),
     )
 
-    def _getcommission(self,size,price,pseudoexec):
+    def _getcommission(self, size, price, pseudoexec):
         if size > 0:
-            return (size*(price * self.p.commission + self.p.transfer_fee))
+            return size * (price * self.params.commission + self.params.transfer_fee)
         elif size < 0:
-            return size * price * (self.p.stamp_duty + self.p.commission)
+            return size * price * (self.params.stamp_duty + self.params.commission)
         else:
             return 0;
