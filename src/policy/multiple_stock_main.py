@@ -81,8 +81,9 @@ def read_local_data(path):
 
 def main(start_cash = 1e5):
     cerebro = bt.Cerebro(stdstats = False) 
-    # cerebro.addobserver(bt.observers.Broker)
-    # cerebro.addobserver(bt.observers.Trades)
+    cerebro.addobserver(bt.observers.Broker)
+    cerebro.addobserver(bt.observers.DrawDown)
+    cerebro.addobserver(bt.observers.TimeReturn)
     cerebro.addstrategy(MadcPlusROEStrategy)
     stock_pool,name_pool = read_local_data("./hs300_data")
     st_date = datetime(2020,1,19)
@@ -104,16 +105,22 @@ def main(start_cash = 1e5):
         ]
         stock_.index = pd.to_datetime(stock_['date'])
         test = pd.to_datetime(stock_['date'])
-        data = my_PandasData(dataname=stock_, fromdate=st_date, todate=ed_date) 
+        data = my_PandasData(dataname=stock_, fromdate=st_date, todate=ed_date,plot = False) 
         cerebro.adddata(data,name = name_pool[i])
         
     cerebro.broker.setcash(start_cash)
-    comminfo = ChinaStockCommission(stamp_duty=0.001, commission=0.0005, transfer_fee = 0.0006)
-    cerebro.broker.addcommissioninfo(comminfo)
+    # comminfo = ChinaStockCommission(stamp_duty=0.001, commission=0.0005, transfer_fee = 0.0006)
+    # cerebro.broker.addcommissioninfo(comminfo)
+    cerebro.broker.setcommission(commission=0.001)
     print("期初总资金: %.2f" % cerebro.broker.getvalue())
-    result = cerebro.run(maxcpus=4,optreturn = False)  
+    cerebro.addanalyzer(bt.analyzers.DrawDown, _name='DW')
+    cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name = 'SharpeRatio',timeframe=bt.TimeFrame.Months,compression = 10)
+    result=cerebro.run(maxcpus=4,optreturn = False)  
+    start = result[0]
     print("期末总资金: %.2f" % cerebro.broker.getvalue())
-    # cerebro.plot();
+    print('SR:', start.analyzers.SharpeRatio.get_analysis())
+    print('DW:', start.analyzers.DW.get_analysis())
+    cerebro.plot();
 
 if __name__ == '__main__':
     main()

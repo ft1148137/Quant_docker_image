@@ -52,4 +52,4 @@ class MadcPlusROEStrategy(bt.Strategy):
         self.last_ranks = self.ranks
         return
     def stop(self):
-        print("策略结束， 总资产: ",self.broker.get_value())
+        pass
