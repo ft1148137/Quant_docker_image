@@ -9,3 +9,5 @@ RUN pip3 install torch --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simpl
 RUN pip3 install torchvision --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install akshare -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com  --upgrade
 RUN apt-get install -y libx11-6
+RUN pip3 install alphalens --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple
+
