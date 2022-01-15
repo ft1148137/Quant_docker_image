@@ -10,7 +10,7 @@ from datetime import datetime
 # 4: cash_flow_to_price_ratio
 #######################
 factor_function = [
-    factor_lib.operating_profit_per_share,
+    factor_lib.operating_profit_per_share.OperatingProfitPerShare,
     factor_lib.net_asset_per_share,
     factor_lib.financial_expense_rate,
     factor_lib.long_term_debt_to_asset_ratio,
@@ -21,7 +21,8 @@ def get_factor_data(factor_index,start_date,end_date):
     if factor_index >= len(factor_function):
         print("index out of range")
         return 
-    return factor_function[factor_index].get_factor(start_date,end_date);
+    factor = factor_function[factor_index]()
+    return factor.get_factor(start_date,end_date);
 
 
 def factor_workflow(start_date,end_date):

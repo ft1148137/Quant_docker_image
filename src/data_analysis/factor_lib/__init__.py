@@ -3,3 +3,4 @@ import factor_lib.net_asset_per_share
 import factor_lib.financial_expense_rate
 import factor_lib.long_term_debt_to_asset_ratio
 import factor_lib.cash_flow_to_price_ratio
+import factor_lib.base_factor_module
