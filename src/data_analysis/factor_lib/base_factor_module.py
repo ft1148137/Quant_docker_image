@@ -25,13 +25,16 @@ class BaseFactor(object):
             df.to_csv(self.data_dict_path + "/trade_date.csv",index = 0)
             return df
         elif self.mode == "offline":
-            return pd.to_datetime(pd.read_csv(self.data_dict_path+"/trade_date.csv")["trade_date"])
+            return pd.read_csv(self.data_dict_path+"/trade_date.csv")["trade_date"]
 
-
-    def get_factor_online(self,start_date, end_date):
-        pass
-
-    def get_factor_offline(self,start_date, end_date):
+    def search_time_range(self,start_date,end_date):
+        trade_date = self.get_trade_date()
+        trade_date.index = pd.to_datetime(trade_date)
+        start_date_corrected = trade_date.index.searchsorted(start_date)
+        end_date_corrected = trade_date.index.searchsorted(end_date)
+        return [date.replace('-','') for date in trade_date.iloc[start_date_corrected:end_date_corrected].tolist()]
+    
+    def get_factor(self,start_date, end_date):
         pass
 
     def calculate_factor_IR(self,data):
