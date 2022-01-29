@@ -1,5 +1,6 @@
 import akshare as ak
 import pandas as pd
+import os
 class BaseFactor(object):
     data_dict_path = "./factor_lib/data_dict"
     code_list = "hs300"
@@ -26,6 +27,11 @@ class BaseFactor(object):
             return df
         elif self.mode == "offline":
             return pd.read_csv(self.data_dict_path+"/trade_date.csv")["trade_date"]
+    def get_seasons_and_year(self,date_string): 
+        year_ = int(date_string[0:4])
+        month = int(date_string[4:6])
+        season = 1 if month>=1 and month <4 else 2 if month >=4 and month < 7 else 3 if month >=7 and month < 10 else 4 if month >=10 and month <= 12 else 0
+        return year_ , season
 
     def search_time_range(self,start_date,end_date):
         trade_date = self.get_trade_date()
