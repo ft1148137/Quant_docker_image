@@ -7,18 +7,6 @@ class BaseFactor(object):
     mode = "offline"
     def __init__(self):
         pass
-    def get_code_list(self):
-        if self.code_list == "hs300":
-            if self.mode == "online":
-                index_stock_cons_df = ak.index_stock_cons(index="000300").iloc[:,0]
-                index_stock_cons_df.to_csv(self.data_dict_path + "/hs300.csv",index = 0, header = 0)
-                return index_stock_cons_df.tolist()
-            elif self.mode == "offline":
-                return pd.read_csv(self.data_dict_path+"/hs300.csv",dtype=object).iloc[:,0].tolist()
-            else:
-                print("ERROR,please choose online or offline")
-        else:
-            print("ERROR, please check code list name")
 
     def get_trade_date(self):
         if self.mode == "online":
@@ -27,6 +15,7 @@ class BaseFactor(object):
             return df
         elif self.mode == "offline":
             return pd.read_csv(self.data_dict_path+"/trade_date.csv")["trade_date"]
+
     def get_seasons_and_year(self,date_string): 
         year_ = int(date_string[0:4])
         month = int(date_string[4:6])
