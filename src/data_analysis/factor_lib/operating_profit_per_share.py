@@ -53,12 +53,13 @@ class OperatingProfitPerShare(BaseFactor):
 
     def get_factor(self,start_date, end_date):
         print("get operating profit per share")
-        print(start_date,end_date)
+        # print(start_date,end_date)
         get_stock_list = GetStockCodeList(self.code_list,start_date,end_date)
         stock_list = get_stock_list.code_list
         date_list = self.calculate_date_time(start_date,end_date)
-        print(date_list)
-        get_em_lrb = GetStockEmLrb(start_date,end_date)
+        get_em_lrb = GetStockEmLrb(start_date,end_date,stock_list)
+        # print(date_list)
+
         # profit_path = self.data_dict_path + "/operating_profit/"
         # if self.mode == "online":
         #     if not os.path.exists(profit_path):
@@ -73,7 +74,7 @@ class OperatingProfitPerShare(BaseFactor):
         #     #     self.get_total_share()
         #         # if(date_[4:6] == "06" or date_[4:6] == "12" ):
         #         #     print(date_)
-        #         #     data = ak.stock_em_fhps(date = date_)
+        #         #     data = ak. `(date = date_)
         #         #     data.to_csv(share_capital_path+str(date_)+".csv",index = 0, header = str(date_))
         # elif self.mode == "offline":
         #     self.get_total_share(stock_list,date_list)

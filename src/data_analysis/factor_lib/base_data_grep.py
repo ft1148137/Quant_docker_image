@@ -53,6 +53,15 @@ class BaseDataGrep(object):
                 date_list.append(date_start_.strftime('%Y-%m-%d')) 
                 date_start_ += relativedelta(days=1)
         return date_list
+        
+    def remove_stock_title(self,stock):
+        return stock[3:8]
 
+    def add_stock_title(self,stock):
+        if(stock[0] == '6'):
+            return "sh."+stock
+        else:
+            return "sz."+stock
+    
     def get_data(self):
         pass
