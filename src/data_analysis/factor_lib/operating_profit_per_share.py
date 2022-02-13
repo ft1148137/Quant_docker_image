@@ -57,7 +57,7 @@ class OperatingProfitPerShare(BaseFactor):
         get_stock_list = GetStockCodeList(self.code_list,start_date,end_date)
         stock_list = get_stock_list.code_list
         date_list = self.calculate_date_time(start_date,end_date)
-        get_em_lrb = GetStockEmLrb(start_date,end_date,stock_list)
+        get_em_lrb = GetStockEmLrb(start_date,end_date,stock_list,"hs300_2010_to_2020")
         # print(date_list)
 
         # profit_path = self.data_dict_path + "/operating_profit/"

@@ -29,8 +29,11 @@ class BaseDataGrep(object):
     def create_dict(self,dict_name):
         os.mkdir(self.data_dict_path + dict_name)
     
-    def save_data(self,data_,dict_name):
-        data_.to_csv(self.data_dict_path + dict_name,index = 0, header = 0)
+    def save_data(self,data_,dict_name,index_ = False):
+        if index_ == False:
+            data_.to_csv(self.data_dict_path + dict_name,index = 0, header = 0)
+        else:
+            data_.to_csv(self.data_dict_path + dict_name, header = 0)
 
     def read_data(self,dict_name):
         return pd.read_csv(self.data_dict_path + dict_name,dtype=object, header = None)
@@ -53,9 +56,9 @@ class BaseDataGrep(object):
                 date_list.append(date_start_.strftime('%Y-%m-%d')) 
                 date_start_ += relativedelta(days=1)
         return date_list
-        
+
     def remove_stock_title(self,stock):
-        return stock[3:8]
+        return stock[3:9]
 
     def add_stock_title(self,stock):
         if(stock[0] == '6'):
