@@ -16,13 +16,11 @@ class GetStockEmLrb(BaseDataGrep):
             # # print(date_search_stock)
             stock_em_lrb_all = pd.DataFrame()
             for date_search_stock in date_stock_em_lrb:
-                print(date_search_stock)
                 if stock_date_index >= len(date_stock_em_lrb):
                     print("index error in stock list")
                     return
                 if date_search_stock >= datetime.datetime.strptime(stock_list.columns[stock_date_index+1], "%Y-%m-%d") - datetime.timedelta(days = 1):
                     stock_date_index+=1
-                    # print(date_search_stock, stock_list.columns[stock_date_index])
                 stocks_code = stock_list.iloc[:,stock_date_index].tolist()
                 stock_em_lrb_ = pd.DataFrame()
                 # print(self.stock_em_lrb.loc[date_search_stock].index.tolist())
@@ -36,13 +34,15 @@ class GetStockEmLrb(BaseDataGrep):
             self.stock_em_lrb = stock_em_lrb_all
         else:
             self.stock_em_lrb = super().read_data(file_path_).set_index([0,1])
-        print(self.stock_em_lrb)
         pass
     def __init__(self,start_date,end_date,stock_list,stock_list_name):
         self.get_data(start_date,end_date)
         self.operate_data_with_stock_list(stock_list,stock_list_name)
         pass
 
+    def get_operating_profit(self):
+        return (self.stock_em_lrb.iloc[:,-3])
+        
     def get_data(self,start_date,end_date):
         date_list = super().get_date_list("session",start_date,end_date)
         # print(date_list)

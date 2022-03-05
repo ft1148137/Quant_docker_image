@@ -7,3 +7,4 @@ import factor_lib.base_factor_module
 import factor_lib.base_data_grep
 import factor_lib.get_code_list
 import factor_lib.get_stock_em_lrb
+import factor_lib.get_query_profit_data

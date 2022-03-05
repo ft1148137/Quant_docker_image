@@ -57,6 +57,8 @@ class BaseDataGrep(object):
                 date_start_ += relativedelta(days=1)
         return date_list
 
+    def transfer_session_to_quarter(self,date_):
+        return 1 if date_ == "03" else 2 if date_ == "06" else 3 if date_ == "09" else 4
     def remove_stock_title(self,stock):
         return stock[3:9]
 

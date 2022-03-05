@@ -3,6 +3,7 @@ import baostock as bs
 from factor_lib.base_factor_module  import BaseFactor
 from factor_lib.get_code_list import GetStockCodeList
 from factor_lib.get_stock_em_lrb import GetStockEmLrb
+from factor_lib.get_query_profit_data import GetQueryProfitData
 import datetime
 import os
 import pandas as pd
@@ -29,62 +30,16 @@ class OperatingProfitPerShare(BaseFactor):
                 start_year +=1
         return date_return
 
-    def get_total_share(self,stock_list,date_list):
-        share_capital_path = self.data_dict_path + "/share_capital/"
-        lg = bs.login()
-        for date in date_list:
-            operation_list = []
-            print(date)
-            year_ , quarter_ = super().get_seasons_and_year(date)
-            for stock in stock_list:
-                if(stock[0] == '6'):
-                    stock = "sh."+stock
-                else:
-                    stock = "sz."+stock
-                rs_operation = bs.query_operation_data(code=stock, year=year_, quarter=quarter_)
-                print(stock,rs_operation.error_code,rs_operation.next())
-                while (rs_operation.error_code == '0') & rs_operation.next():
-                    operation_list.append(rs_operation.get_row_data())
-            result_operation = pd.DataFrame(operation_list, columns=rs_operation.fields)
-            result_operation.to_csv(share_capital_path+date+".csv",index = 0, header = date)
-            print(result_operation)
-        bs.logout()
-        pass
-
     def get_factor(self,start_date, end_date):
         print("get operating profit per share")
         # print(start_date,end_date)
         get_stock_list = GetStockCodeList(self.code_list,start_date,end_date)
         stock_list = get_stock_list.code_list
-        date_list = self.calculate_date_time(start_date,end_date)
         get_em_lrb = GetStockEmLrb(start_date,end_date,stock_list,"hs300_2010_to_2020")
-        # print(date_list)
-
-        # profit_path = self.data_dict_path + "/operating_profit/"
-        # if self.mode == "online":
-        #     if not os.path.exists(profit_path):
-        #         os.mkdir(profit_path)
-        #     for date_ in date_list:
-        #         print (date_)
-        #         data = ak.stock_em_lrb(date=date_)
-        #         data.to_csv(profit_path+str(date_)+".csv",index = 0, header = str(date_))
-        #     # if not os.path.exists(share_capital_path):
-        #     #     os.mkdir(share_capital_path)
-        #     # for date_ in date_list:
-        #     #     self.get_total_share()
-        #         # if(date_[4:6] == "06" or date_[4:6] == "12" ):
-        #         #     print(date_)
-        #         #     data = ak. `(date = date_)
-        #         #     data.to_csv(share_capital_path+str(date_)+".csv",index = 0, header = str(date_))
-        # elif self.mode == "offline":
-        #     self.get_total_share(stock_list,date_list)
-
-        # #     for date_ in date_list:
-        # #         profit_data = (pd.read_csv(profit_path+str(date_) + ".csv").set_index("股票代码")).iloc[:,-3]
-        # #         if(date_[4:6] == "06" or date_[4:6] == "12" ):
-        # #             share_capital = (pd.read_csv(share_capital_path+str(date_) + ".csv").set_index("代码")).iloc[:,-8]
-        # #             print(share_capital)
-        # #         # print(profit_data)
-        #     pass
-            
+        operating_profit = get_em_lrb.get_operating_profit()
+        print(operating_profit)
+        get_query_profit = GetQueryProfitData(start_date,end_date,stock_list,"hs300_2010_to_2020")
+        total_share=get_query_profit.get_total_share()
+        print(total_share) 
+        super().index_matching(operating_profit,total_share)  
         pass
