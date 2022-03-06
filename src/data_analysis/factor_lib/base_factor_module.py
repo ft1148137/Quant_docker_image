@@ -29,7 +29,16 @@ class BaseFactor(object):
     #     return [date.replace('-','') for date in trade_date.iloc[start_date_corrected:end_date_corrected].tolist()]
 
     def index_matching(self,pd_data_src,pd_data_tar):
-        pass
+        # print(pd_data_src,pd_data_tar)
+        if not (pd_data_src.index.levels[0].values == pd_data_tar.index.levels[0].values).all():
+            print("date error by matching index")
+        dates_ = pd_data_src.index.levels[0].values
+        result = pd.DataFrame()
+        for date_ in dates_:
+            data_ = pd.merge(pd_data_src[date_],pd_data_tar[date_],left_index = True,right_index=True, how = "inner")
+            data_.index = pd.MultiIndex.from_product([[date_],data_.index.to_list()])
+            result = result.append(data_)
+        return (result)
     
     def get_factor(self,start_date, end_date):
         pass

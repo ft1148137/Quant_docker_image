@@ -37,9 +37,7 @@ class OperatingProfitPerShare(BaseFactor):
         stock_list = get_stock_list.code_list
         get_em_lrb = GetStockEmLrb(start_date,end_date,stock_list,"hs300_2010_to_2020")
         operating_profit = get_em_lrb.get_operating_profit()
-        print(operating_profit)
         get_query_profit = GetQueryProfitData(start_date,end_date,stock_list,"hs300_2010_to_2020")
         total_share=get_query_profit.get_total_share()
-        print(total_share) 
         super().index_matching(operating_profit,total_share)  
         pass

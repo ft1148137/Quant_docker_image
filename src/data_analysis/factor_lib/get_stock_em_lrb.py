@@ -23,7 +23,6 @@ class GetStockEmLrb(BaseDataGrep):
                     stock_date_index+=1
                 stocks_code = stock_list.iloc[:,stock_date_index].tolist()
                 stock_em_lrb_ = pd.DataFrame()
-                # print(self.stock_em_lrb.loc[date_search_stock].index.tolist())
                 for  stock_code in stocks_code:
                     super().remove_stock_title(stock_code)
                     if super().remove_stock_title(stock_code) in (self.stock_em_lrb.loc[date_search_stock].index.tolist()):
@@ -33,7 +32,10 @@ class GetStockEmLrb(BaseDataGrep):
             super().save_data(stock_em_lrb_all,file_path_,index_ = True)
             self.stock_em_lrb = stock_em_lrb_all
         else:
-            self.stock_em_lrb = super().read_data(file_path_).set_index([0,1])
+            self.stock_em_lrb = super().read_data(file_path_)
+            self.stock_em_lrb[0] = [datetime.datetime.strptime(date_, "%Y-%m-%d") for date_ in self.stock_em_lrb.loc[:,0].tolist()]
+            self.stock_em_lrb = self.stock_em_lrb.set_index([0,1])
+            print(self.stock_em_lrb.index)
         pass
     def __init__(self,start_date,end_date,stock_list,stock_list_name):
         self.get_data(start_date,end_date)
