@@ -13,7 +13,6 @@ class GetStockEmLrb(BaseDataGrep):
         if not super().check_data_exist(file_path_):
             date_stock_em_lrb = self.stock_em_lrb.index.levels[0]
             stock_date_index = 0
-            # # print(date_search_stock)
             stock_em_lrb_all = pd.DataFrame()
             for date_search_stock in date_stock_em_lrb:
                 if stock_date_index >= len(date_stock_em_lrb):
@@ -31,11 +30,13 @@ class GetStockEmLrb(BaseDataGrep):
                 stock_em_lrb_all = pd.concat([stock_em_lrb_all,stock_em_lrb_])
             super().save_data(stock_em_lrb_all,file_path_,index_ = True)
             self.stock_em_lrb = stock_em_lrb_all
+            self.stock_em_lrb[0] = [datetime.datetime.strptime(date_, "%Y-%m-%d") for date_ in self.stock_em_lrb.loc[:,0].tolist()]
+            self.stock_em_lrb = self.stock_em_lrb.set_index([0,1])
+
         else:
             self.stock_em_lrb = super().read_data(file_path_)
             self.stock_em_lrb[0] = [datetime.datetime.strptime(date_, "%Y-%m-%d") for date_ in self.stock_em_lrb.loc[:,0].tolist()]
             self.stock_em_lrb = self.stock_em_lrb.set_index([0,1])
-            print(self.stock_em_lrb.index)
         pass
     def __init__(self,start_date,end_date,stock_list,stock_list_name):
         self.get_data(start_date,end_date)
@@ -43,7 +44,7 @@ class GetStockEmLrb(BaseDataGrep):
         pass
 
     def get_operating_profit(self):
-        return (self.stock_em_lrb.iloc[:,-3])
+        return (self.stock_em_lrb.iloc[:,-3]).rename('operating profit',inplace=True)
         
     def get_data(self,start_date,end_date):
         date_list = super().get_date_list("session",start_date,end_date)

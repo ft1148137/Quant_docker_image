@@ -17,46 +17,19 @@ factor_function = [
     factor_lib.cash_flow_to_price_ratio
 ]
 
-def get_factor_data(factor_index,start_date,end_date):
+def get_factor_data(factor_index,start_date,end_date,data_save_name_):
     if factor_index >= len(factor_function):
         print("index out of range")
         return 
-    factor = factor_function[factor_index]()
-    return factor.get_factor(start_date,end_date);
-
-
-def factor_workflow(start_date,end_date):
-    get_factor_data(0,start_date,end_date)
+    factor = factor_function[factor_index](start_date,end_date,data_save_name_)
     pass
 
-def get_factor(factor_index,start_date,end_date):
-
+def factor_workflow(start_date,end_date,data_save_name_):
+    get_factor_data(0,start_date,end_date,data_save_name_)
     pass
 
-def calculate_factor_IR(data):
-    
-    pass
-
-def calculate_factor_IC(data):
-    
-    pass
-
-def remove_extremum(data,used_method):
-
-    pass
-
-def data_normalized(data,used_method):
-
-    pass
-
-def data_filled(data,used_method):
-
-    pass
-
-def data_neutralize(data,used_method):
-
-    pass
 
 start = datetime(2010,1,1)
 end = datetime(2020,1,1)
-factor_workflow(start,end)
+save_data_name = "hs300_2010_to_2020"
+factor_workflow(start,end,save_data_name)

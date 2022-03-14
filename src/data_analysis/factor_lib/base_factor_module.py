@@ -1,6 +1,7 @@
 import akshare as ak
 import pandas as pd
 import os
+from factor_lib.factor_lib_data_type import *
 class BaseFactor(object):
     data_dict_path = "./factor_lib/data_dict"
     code_list = "hs300"
@@ -39,9 +40,6 @@ class BaseFactor(object):
             data_.index = pd.MultiIndex.from_product([[date_],data_.index.to_list()])
             result = result.append(data_)
         return (result)
-    
-    def get_factor(self,start_date, end_date):
-        pass
 
     def calculate_factor_IR(self,data):
         
@@ -51,8 +49,27 @@ class BaseFactor(object):
     
         pass
 
-    def remove_extremum(self,data,used_method):
-
+    def remove_extremum(self,data,used_method,param):
+        if used_method == remove_extremum_method.AVG:
+            mean = data.mean()
+            std_dev = data.std()
+            print(mean + param.AVG_kesi * std_dev)
+            for i in range(len(data)):
+                if data[i] >= mean + param.AVG_kesi * std_dev :
+                    data[i] =  mean + param.AVG_kesi * std_dev
+            print (mean,std_dev)
+            pass
+        elif used_method == remove_extremum_method.MAD:
+            midian = data.median()
+            data_div = pd.Series([x- midian for x in data])
+            print (data_div)
+            midian_div = data_div.median()
+            print(midian_div)
+            pass
+        elif used_method == remove_extremum_method.MID:
+            pass
+        else:
+            print("ERROR, wrong method when remove extremum")
         pass
 
     def data_normalized(self,data,used_method):

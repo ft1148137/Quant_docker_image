@@ -6,7 +6,8 @@ import datetime
 class GetQueryProfitData(BaseDataGrep):
     query_profit_data = pd.DataFrame()
     def get_total_share(self):
-        return (self.query_profit_data.iloc[:,-2])
+        return (self.query_profit_data.iloc[:,-2]).rename('total share',inplace=True)
+
     def __init__(self,start_date,end_date,stock_list,stock_list_name):
         self.get_data(start_date,end_date,stock_list,stock_list_name)
         pass
