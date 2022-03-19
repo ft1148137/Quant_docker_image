@@ -2,6 +2,8 @@ import akshare as ak
 import pandas as pd
 import os
 from factor_lib.factor_lib_data_type import *
+import numpy as np
+import warnings
 class BaseFactor(object):
     data_dict_path = "./factor_lib/data_dict"
     code_list = "hs300"
@@ -50,33 +52,45 @@ class BaseFactor(object):
         pass
 
     def remove_extremum(self,data,used_method,param):
+        if(data.hasnans):
+            print("\033[0;33;40mWARN! input data have NAN,use data fill(default : drop)\033[0m")
+            if(param.data_fill == data_fill_method.DROP):
+                data = data.dropna()
+            elif(param.data_fill == data_fill_method.MID):
+                data.fillna(data.dropna().median(),inplace=True)
+            elif(param.data_fill == data_fill_method.AVG):
+                data.fillna(data.dropna().mean(),inplace=True)
         if used_method == remove_extremum_method.AVG:
             mean = data.mean()
             std_dev = data.std()
-            print(mean + param.AVG_kesi * std_dev)
             for i in range(len(data)):
                 if data[i] >= mean + param.AVG_kesi * std_dev :
                     data[i] =  mean + param.AVG_kesi * std_dev
-            print (mean,std_dev)
             pass
         elif used_method == remove_extremum_method.MAD:
             midian = data.median()
             data_div = pd.Series([x- midian for x in data])
-            print (data_div)
             midian_div = data_div.median()
-            print(midian_div)
+            for i in range(len(data)):
+                if data[i] >= midian + param.MAD_kesi * midian_div :
+                    data[i] =  midian + param.MAD_kesi * midian_div
+                elif data[i] <= midian - param.MAD_kesi * midian_div :
+                    data[i] =  midian - param.MAD_kesi * midian_div
             pass
-        elif used_method == remove_extremum_method.MID:
+        elif used_method == remove_extremum_method.QUA:
+            upper = np.percentile(np.array(data),param.QUA_upper)
+            down = np.percentile(np.array(data),param.QUA_down)
+            for i in range(len(data)):
+                if data[i] >= param.QUA_upper:
+                        data[i] =  param.QUA_upper
+                elif data[i] <= param.QUA_down:
+                    data[i] =  param.QUA_down
             pass
         else:
-            print("ERROR, wrong method when remove extremum")
+            print("\033[0;31;40mERROR, wrong method when remove extremu\033[0m")
         pass
 
     def data_normalized(self,data,used_method):
-
-        pass
-
-    def data_filled(self,data,used_method):
 
         pass
 
