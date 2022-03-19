@@ -13,8 +13,8 @@ class data_fill_method(Enum):
     pass
 
 class remove_extremum_param():
-    AVG_kesi = 0
-    MAD_kesi = 0
+    AVG_kesi = 2
+    MAD_kesi = 3 * 1.4826
     QUA_upper = 75
     QUA_down = 25
     data_fill = data_fill_method.DROP

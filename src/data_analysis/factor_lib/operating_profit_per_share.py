@@ -30,10 +30,8 @@ class OperatingProfitPerShare(BaseFactor):
         operating_profit_per_share = pd.to_numeric(matching_result["operating profit"],errors='coerce')/pd.to_numeric(matching_result["total share"],errors='coerce')
         operating_profit_per_share.rename("operating profit per share",inplace = True)
         param = remove_extremum_param();
-        param.AVG_kesi = 2;
-        param.MAD_kesi = 3;
-        param.QUA_upper = 75
-        param.QUA_upper = 25
-        param.data_fill = data_fill_method.AVG
-        super().remove_extremum(operating_profit_per_share,remove_extremum_method.QUA,param)
+        param.data_fill = data_fill_method.MID
+        super().remove_extremum(operating_profit_per_share,remove_extremum_method.MAD,param)
+        super().data_normalized(operating_profit_per_share);
+        print(operating_profit_per_share)
         pass
