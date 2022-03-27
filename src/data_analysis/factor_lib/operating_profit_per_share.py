@@ -8,7 +8,7 @@ import datetime
 import os
 import pandas as pd
 from factor_lib.factor_lib_data_type import *
-
+from factor_lib.base_plot import BasePlot
 
 ##营业利润/总股本
 class OperatingProfitPerShare(BaseFactor):
@@ -31,7 +31,14 @@ class OperatingProfitPerShare(BaseFactor):
         operating_profit_per_share.rename("operating profit per share",inplace = True)
         param = remove_extremum_param();
         param.data_fill = data_fill_method.MID
-        super().remove_extremum(operating_profit_per_share,remove_extremum_method.MAD,param)
+        plt = BasePlot()
+        plt.set_x_scalar(len(operating_profit_per_share))
+        # plt.add_pts(operating_profit_per_share.tolist())
+        super().remove_extremum(operating_profit_per_share,remove_extremum_method.AVG,param)
+        # plt.add_pts(operating_profit_per_share.tolist())
         super().data_normalized(operating_profit_per_share);
         print(operating_profit_per_share)
+        # plt.add_line(operating_profit_per_share.tolist(),'data')
+        plt.add_pts(operating_profit_per_share.tolist())
+        plt.save("test")
         pass
